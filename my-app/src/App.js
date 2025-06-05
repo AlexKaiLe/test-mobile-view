@@ -39,6 +39,7 @@ function App() {
             height: "100%",
             overflowY: "auto",
             scrollBehavior: "smooth",
+            boxSizing: "border-box",
           }}
         >
           {sections.map((section) => (
@@ -80,8 +81,9 @@ function App() {
             justifyContent: "center",
             borderLeft: "1px solid #ccc",
             position: "sticky",
-            top: "64px", // height of AppBar
-            height: "calc(100vh - 64px)",
+            top: "64px",
+            height: "100%",
+            boxSizing: "border-box",
           }}
         >
           <Box
