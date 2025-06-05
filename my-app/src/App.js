@@ -28,7 +28,7 @@ function App() {
           display: "flex",
           width: "100vw",
           p: 2,
-          height: "calc(100vh - 64px)",
+          height: "calc(100dvh - 64px)",
           boxSizing: "border-box",
         }}
       >
@@ -47,7 +47,7 @@ function App() {
               key={section.id}
               id={section.id}
               sx={{
-                height: "100vh",
+                height: "100dvh",
                 backgroundColor: getSectionColor(section.id),
                 display: "flex",
                 flexDirection: "column",
