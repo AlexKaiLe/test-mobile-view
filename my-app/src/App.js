@@ -23,7 +23,15 @@ function App() {
       </AppBar>
 
       {/* Main Layout: Left (scrollable) + Right (static map) */}
-      <Box sx={{ display: "flex", height: "calc(100vh - 64px)" }}>
+      <Box
+        sx={{
+          display: "flex",
+          width: "100vw",
+          p: 2,
+          height: "calc(100vh - 64px)",
+          boxSizing: "border-box",
+        }}
+      >
         {/* Left side: Scrollable content */}
         <Box
           sx={{
@@ -41,13 +49,23 @@ function App() {
                 height: "100vh",
                 backgroundColor: getSectionColor(section.id),
                 display: "flex",
-                justifyContent: "center",
+                flexDirection: "column",
+                justifyContent: "space-evenly",
                 alignItems: "center",
                 fontSize: "2rem",
                 color: "white",
               }}
             >
               {section.label} Section
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "200px",
+                  p: 2,
+                  backgroundColor: "black",
+                  boxSizing: "border-box",
+                }}
+              ></Box>
             </Box>
           ))}
         </Box>
