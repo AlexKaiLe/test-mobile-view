@@ -1,295 +1,278 @@
-// import React, { useState, useEffect } from "react";
-// import {
-//   AppBar,
-//   Toolbar,
-//   Button,
-//   Box,
-//   TextField,
-//   Typography,
-// } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  TextField,
+  IconButton,
+  Paper,
+  Typography,
+  Container,
+} from "@mui/material";
+import { Send as SendIcon } from "@mui/icons-material";
 
-// const sections = [
-//   { id: "home", label: "Home" },
-//   { id: "about", label: "About" },
-//   { id: "services", label: "Services" },
-//   { id: "contact", label: "Contact" },
-// ];
-
-// function getSectionColor(id) {
-//   const colors = {
-//     home: "#1976d2",
-//     about: "#388e3c",
-//     services: "#f57c00",
-//     contact: "#6a1b9a",
-//   };
-//   return colors[id] || "#333";
-// }
-
-// // 🔧 Custom hook to track safe viewport height (handles mobile keyboard)
-// function useViewportHeight() {
-//   const [height, setHeight] = useState(window.innerHeight);
-
-//   useEffect(() => {
-//     const handleResize = () => {
-//       setHeight(window.innerHeight);
-//     };
-
-//     window.addEventListener("resize", handleResize);
-//     window.addEventListener("orientationchange", handleResize);
-
-//     return () => {
-//       window.removeEventListener("resize", handleResize);
-//       window.removeEventListener("orientationchange", handleResize);
-//     };
-//   }, []);
-
-//   return height;
-// }
-
-// export default function App() {
-//   const [chatOpen, setChatOpen] = useState(false);
-//   const [chatInput, setChatInput] = useState("");
-//   const viewportHeight = useViewportHeight();
-
-//   // AppBar height is assumed 64px
-//   const contentHeight = viewportHeight - 64;
-
-//   return (
-//     <>
-//       <AppBar position="sticky">
-//         <Toolbar sx={{ justifyContent: "center", gap: 2 }}>
-//           {sections.map((section) => (
-//             <Button key={section.id} color="inherit" href={`#${section.id}`}>
-//               {section.label}
-//             </Button>
-//           ))}
-//         </Toolbar>
-//       </AppBar>
-
-//       <Box
-//         sx={{
-//           height: "calc(100dvh - 64px)",
-//           display: "flex",
-//           flexDirection: "column",
-//         }}
-//       >
-//         {!chatOpen ? (
-//           <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
-//             {/* Left scrollable sections */}
-//             <Box
-//               sx={{
-//                 width: "60%",
-//                 height: "100%",
-//                 overflowY: "auto",
-//                 scrollBehavior: "smooth",
-//               }}
-//             >
-//               {sections.map((section) => (
-//                 <Box
-//                   key={section.id}
-//                   id={section.id}
-//                   sx={{
-//                     minHeight: "100%",
-//                     backgroundColor: getSectionColor(section.id),
-//                     display: "flex",
-//                     flexDirection: "column",
-//                     justifyContent: "center",
-//                     alignItems: "center",
-//                     fontSize: "2rem",
-//                     color: "white",
-//                     p: 2,
-//                     boxSizing: "border-box",
-//                   }}
-//                 >
-//                   {section.label} Alex
-//                   <Box
-//                     sx={{
-//                       width: "100%",
-//                       height: 200,
-//                       backgroundColor: "black",
-//                       mt: 2,
-//                     }}
-//                   />
-//                 </Box>
-//               ))}
-//             </Box>
-
-//             {/* Right static map */}
-//             <Box
-//               sx={{
-//                 width: "40%",
-//                 backgroundColor: "#eee",
-//                 borderLeft: "1px solid #ccc",
-//                 display: "flex",
-//                 alignItems: "center",
-//                 justifyContent: "center",
-//               }}
-//             >
-//               <Box
-//                 sx={{
-//                   width: "90%",
-//                   height: "90%",
-//                   backgroundColor: "#ccc",
-//                   display: "flex",
-//                   alignItems: "center",
-//                   justifyContent: "center",
-//                   fontSize: "1.5rem",
-//                   color: "#333",
-//                 }}
-//               >
-//                 Static Map Box
-//               </Box>
-//             </Box>
-//           </Box>
-//         ) : (
-//           <Box
-//             sx={{
-//               height: "100%",
-//               display: "flex",
-//               flexDirection: "column",
-//               position: "relative",
-//               p: 1,
-//               overflow: "hidden",
-//               boxSizing: "border-box",
-//             }}
-//           >
-//             <Box>
-//               <Button onClick={() => setChatOpen(false)}>close</Button>
-//             </Box>
-
-//             {/* Chat conversation area */}
-//             <Box
-//               sx={{
-//                 flex: 1,
-//                 overflowY: "auto",
-//                 mb: 2,
-//                 border: "1px solid #ccc",
-//                 borderRadius: 1,
-//                 p: 1,
-//                 bgcolor: "#fafafa",
-//               }}
-//             >
-//               <Typography>Chat conversation here...</Typography>
-//             </Box>
-
-//             {/* Chat input */}
-//             <TextField
-//               fullWidth
-//               placeholder="Ask the assistant..."
-//               value={chatInput}
-//               onChange={(e) => setChatInput(e.target.value)}
-//               autoFocus
-//             />
-//           </Box>
-//         )}
-
-//         {!chatOpen && (
-//           <Box
-//             sx={{
-//               p: 1,
-//               borderTop: "1px solid #ddd",
-//               bgcolor: "#fafafa",
-//             }}
-//           >
-//             <TextField
-//               fullWidth
-//               placeholder="Ask the assistant..."
-//               value={chatInput}
-//               onFocus={() => setChatOpen(true)}
-//               onChange={(e) => setChatInput(e.target.value)}
-//             />
-//           </Box>
-//         )}
-//       </Box>
-//     </>
-//   );
-// }
-import React, { Component } from "react";
-import "./App.css";
-
-class App extends Component {
+class ChatApp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      objectSize: 200,
-      initialHeight: window.innerHeight,
+      messages: [
+        { id: 1, text: "Hello! This is a sample message.", sender: "other" },
+        {
+          id: 2,
+          text: "This is how the chat looks with proper keyboard handling.",
+          sender: "me",
+        },
+        {
+          id: 3,
+          text: "The input stays at the bottom and content adjusts properly.",
+          sender: "other",
+        },
+      ],
+      inputValue: "",
+      viewportHeight: window.innerHeight,
       keyboardVisible: false,
     };
+
+    this.messagesEndRef = React.createRef();
+    this.inputRef = React.createRef();
   }
 
   componentDidMount() {
-    this.setState({ initialHeight: window.innerHeight });
-    window.addEventListener("resize", this.handleResize);
+    // Handle viewport changes for mobile keyboard
+    this.handleViewportChange();
+    window.addEventListener("resize", this.handleViewportChange);
+
+    // Prevent body scroll on mobile
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+    document.body.style.height = "100%";
+
+    // Handle iOS keyboard specifically
+    if (this.isIOS()) {
+      window.addEventListener("focusin", this.handleFocusIn);
+      window.addEventListener("focusout", this.handleFocusOut);
+    }
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("resize", this.handleViewportChange);
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.width = "";
+    document.body.style.height = "";
+
+    if (this.isIOS()) {
+      window.removeEventListener("focusin", this.handleFocusIn);
+      window.removeEventListener("focusout", this.handleFocusOut);
+    }
   }
 
-  handleResize = () => {
-    const { initialHeight } = this.state;
-    const currentHeight = window.innerHeight;
+  isIOS = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+  };
 
-    if (currentHeight < initialHeight - 100) {
-      // Keyboard likely opened
-      this.setState({ keyboardVisible: true, objectSize: 100 });
-    } else {
-      // Keyboard likely closed
-      this.setState({ keyboardVisible: false, objectSize: 200 });
+  handleViewportChange = () => {
+    const currentHeight = window.innerHeight;
+    const initialHeight = this.state.viewportHeight;
+
+    // Detect keyboard presence by viewport height change
+    const heightDiff = initialHeight - currentHeight;
+    const keyboardVisible = heightDiff > 150; // threshold for keyboard detection
+
+    this.setState({
+      viewportHeight: currentHeight,
+      keyboardVisible,
+    });
+  };
+
+  handleFocusIn = () => {
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 300);
+  };
+
+  handleFocusOut = () => {
+    this.setState({ keyboardVisible: false });
+  };
+
+  scrollToBottom = () => {
+    if (this.messagesEndRef.current) {
+      this.messagesEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  };
+
+  handleSendMessage = () => {
+    if (this.state.inputValue.trim()) {
+      const newMessage = {
+        id: Date.now(),
+        text: this.state.inputValue,
+        sender: "me",
+      };
+
+      this.setState(
+        {
+          messages: [...this.state.messages, newMessage],
+          inputValue: "",
+        },
+        () => {
+          setTimeout(this.scrollToBottom, 100);
+        }
+      );
+    }
+  };
+
+  handleInputChange = (e) => {
+    this.setState({ inputValue: e.target.value });
+  };
+
+  handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      this.handleSendMessage();
     }
   };
 
   render() {
-    const { objectSize, keyboardVisible } = this.state;
+    const { messages, inputValue, viewportHeight, keyboardVisible } =
+      this.state;
 
     return (
-      <div
-        className="App"
-        style={{
-          height: "100dvh",
+      <Box
+        sx={{
+          height: "100vh",
+          maxHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
           overflow: "hidden",
+          bgcolor: "#f5f5f5",
           position: "relative",
-          backgroundColor: "#f5f5f5",
         }}
       >
-        {/* The resizable object */}
-        <div
-          style={{
-            width: objectSize,
-            height: objectSize,
-            backgroundColor: "skyblue",
-            margin: "20px auto",
-            transition: "all 0.3s ease",
-          }}
-        />
-
-        {/* Input container fixed at the bottom */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: keyboardVisible ? "300px" : "0px", // simulate shift up
-            left: 0,
-            right: 0,
-            padding: 10,
-            backgroundColor: "#fff",
-            borderTop: "1px solid #ccc",
-            transition: "bottom 0.3s ease",
+        {/* Header */}
+        <Paper
+          elevation={1}
+          sx={{
+            p: 2,
+            bgcolor: "primary.main",
+            color: "white",
+            flexShrink: 0,
           }}
         >
-          <input
-            type="text"
-            placeholder="Type here..."
-            style={{
-              width: "100%",
-              padding: 12,
-              fontSize: 16,
-              boxSizing: "border-box",
+          <Typography variant="h6" align="center">
+            Chat App
+          </Typography>
+        </Paper>
+
+        {/* Messages Container */}
+        <Box
+          sx={{
+            flex: 1,
+            overflow: "auto",
+            p: 1,
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0, // Important for flex scroll
+            // Adjust height based on keyboard presence
+            height: keyboardVisible ? `${viewportHeight - 120}px` : "auto",
+          }}
+        >
+          {messages.map((message) => (
+            <Box
+              key={message.id}
+              sx={{
+                display: "flex",
+                justifyContent:
+                  message.sender === "me" ? "flex-end" : "flex-start",
+                mb: 1,
+              }}
+            >
+              <Paper
+                sx={{
+                  p: 2,
+                  maxWidth: "70%",
+                  bgcolor: message.sender === "me" ? "primary.main" : "white",
+                  color: message.sender === "me" ? "white" : "text.primary",
+                  borderRadius:
+                    message.sender === "me"
+                      ? "20px 20px 4px 20px"
+                      : "20px 20px 20px 4px",
+                }}
+              >
+                <Typography variant="body1">{message.text}</Typography>
+              </Paper>
+            </Box>
+          ))}
+          <div ref={this.messagesEndRef} />
+        </Box>
+
+        {/* Input Container */}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            bgcolor: "white",
+            flexShrink: 0,
+            position: "sticky",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            // Prevent the input from being pushed off screen
+            zIndex: 1000,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-end",
+              gap: 1,
             }}
-          />
-        </div>
-      </div>
+          >
+            <TextField
+              ref={this.inputRef}
+              fullWidth
+              multiline
+              maxRows={4}
+              placeholder="Type a message..."
+              value={inputValue}
+              onChange={this.handleInputChange}
+              onKeyPress={this.handleKeyPress}
+              variant="outlined"
+              size="small"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "20px",
+                  bgcolor: "#f8f8f8",
+                },
+              }}
+              // Prevent zoom on iOS
+              inputProps={{
+                style: { fontSize: "16px" },
+              }}
+            />
+            {/* <IconButton
+              color="primary"
+              onClick={this.handleSendMessage}
+              disabled={!inputValue.trim()}
+              sx={{
+                bgcolor: "primary.main",
+                color: "white",
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                },
+                "&.Mui-disabled": {
+                  bgcolor: "#ccc",
+                },
+              }}
+            >
+              <SendIcon />
+            </IconButton> */}
+          </Box>
+        </Paper>
+      </Box>
     );
   }
 }
 
-export default App;
+export default ChatApp;
