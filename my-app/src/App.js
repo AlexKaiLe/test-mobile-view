@@ -1,5 +1,14 @@
-import React from "react";
-import { AppBar, Toolbar, Button, Box } from "@mui/material";
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Box,
+  TextField,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const sections = [
   { id: "home", label: "Home" },
@@ -8,7 +17,20 @@ const sections = [
   { id: "contact", label: "Contact" },
 ];
 
-function App() {
+function getSectionColor(id) {
+  const colors = {
+    home: "#1976d2",
+    about: "#388e3c",
+    services: "#f57c00",
+    contact: "#6a1b9a",
+  };
+  return colors[id] || "#333";
+}
+
+export default function App() {
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+
   return (
     <>
       {/* Sticky AppBar */}
@@ -22,98 +44,150 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      {/* Main Layout: Left (scrollable) + Right (static map) */}
+      {/* Main layout container */}
       <Box
         sx={{
+          height: "calc(100dvh - 64px)", // full viewport minus appbar
           display: "flex",
-          width: "100vw",
-          p: 2,
-          height: "calc(100dvh - 64px)",
-          boxSizing: "border-box",
+          flexDirection: "column",
         }}
       >
-        {/* Left side: Scrollable content */}
-        <Box
-          sx={{
-            width: "60%",
-            height: "100%",
-            overflowY: "auto",
-            scrollBehavior: "smooth",
-            boxSizing: "border-box",
-          }}
-        >
-          {sections.map((section) => (
+        {/* Main content area: either normal view or chat expanded */}
+        {!chatOpen ? (
+          <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
+            {/* Left scrollable sections */}
             <Box
-              key={section.id}
-              id={section.id}
               sx={{
-                height: "100dvh",
-                backgroundColor: getSectionColor(section.id),
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-                fontSize: "2rem",
-                color: "white",
+                width: "60%",
+                height: "100%",
+                overflowY: "auto",
+                scrollBehavior: "smooth",
+                boxSizing: "border-box",
               }}
             >
-              {section.label} Section
+              {sections.map((section) => (
+                <Box
+                  key={section.id}
+                  id={section.id}
+                  sx={{
+                    height: "100%",
+                    minHeight: "100%",
+                    backgroundColor: getSectionColor(section.id),
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "2rem",
+                    color: "white",
+                    p: 2,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  {section.label} Section
+                  <Box
+                    sx={{
+                      width: "100%",
+                      height: 200,
+                      backgroundColor: "black",
+                      mt: 2,
+                    }}
+                  />
+                </Box>
+              ))}
+            </Box>
+
+            {/* Right static map */}
+            <Box
+              sx={{
+                width: "40%",
+                backgroundColor: "#eee",
+                borderLeft: "1px solid #ccc",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Box
                 sx={{
-                  width: "100%",
-                  height: "200px",
-                  p: 2,
-                  backgroundColor: "black",
-                  boxSizing: "border-box",
+                  width: "90%",
+                  height: "90%",
+                  backgroundColor: "#ccc",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                  color: "#333",
                 }}
-              ></Box>
+              >
+                Static Map Box
+              </Box>
             </Box>
-          ))}
-        </Box>
-
-        {/* Right side: Static Map Box */}
-        <Box
-          sx={{
-            width: "40%",
-            backgroundColor: "#eee",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderLeft: "1px solid #ccc",
-            position: "sticky",
-            top: "64px",
-            height: "100%",
-            boxSizing: "border-box",
-          }}
-        >
+          </Box>
+        ) : (
           <Box
             sx={{
-              width: "90%",
+              flex: 1,
               height: "90%",
-              backgroundColor: "#ccc",
+              p: 1,
+              position: "relative",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.5rem",
-              color: "#333",
+              flexDirection: "column",
             }}
           >
-            Static Map Box
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+              }}
+            >
+              <Button onClick={() => setChatOpen(false)}>hi </Button>
+            </Box>
+            {/* Chat conversation area */}
+            <Box
+              sx={{
+                flex: 1,
+                overflowY: "auto",
+                mb: 2,
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                p: 1,
+                bgcolor: "#fafafa",
+              }}
+            >
+              {/* Example chat content */}
+              <Typography>Chat conversation here...</Typography>
+            </Box>
+            {/* Chat input at bottom */}
+            <TextField
+              fullWidth
+              placeholder="Ask the assistant..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              autoFocus
+            />
           </Box>
-        </Box>
+        )}
+
+        {/* Chat input at bottom in normal view */}
+        {!chatOpen && (
+          <Box
+            sx={{
+              p: 1,
+              borderTop: "1px solid #ddd",
+              bgcolor: "#fafafa",
+            }}
+          >
+            <TextField
+              fullWidth
+              placeholder="Ask the assistant..."
+              value={chatInput}
+              onFocus={() => setChatOpen(true)}
+              onChange={(e) => setChatInput(e.target.value)}
+            />
+          </Box>
+        )}
       </Box>
     </>
   );
 }
-
-function getSectionColor(id) {
-  const colors = {
-    home: "#1976d2",
-    about: "#388e3c",
-    services: "#f57c00",
-    contact: "#6a1b9a",
-  };
-  return colors[id] || "#333";
-}
-
-export default App;
