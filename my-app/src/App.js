@@ -83,7 +83,7 @@ export default function App() {
                     boxSizing: "border-box",
                   }}
                 >
-                  {section.label} Section
+                  {section.label} Alex
                   <Box
                     sx={{
                       width: "100%",
