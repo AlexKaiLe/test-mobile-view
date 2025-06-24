@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
   Button,
   Box,
   TextField,
-  IconButton,
   Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 
 const sections = [
   { id: "home", label: "Home" },
@@ -27,13 +25,37 @@ function getSectionColor(id) {
   return colors[id] || "#333";
 }
 
+// 🔧 Custom hook to track safe viewport height (handles mobile keyboard)
+function useViewportHeight() {
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
+  return height;
+}
+
 export default function App() {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState("");
+  const viewportHeight = useViewportHeight();
+
+  // AppBar height is assumed 64px
+  const contentHeight = viewportHeight - 64;
 
   return (
     <>
-      {/* Sticky AppBar */}
       <AppBar position="sticky">
         <Toolbar sx={{ justifyContent: "center", gap: 2 }}>
           {sections.map((section) => (
@@ -44,15 +66,13 @@ export default function App() {
         </Toolbar>
       </AppBar>
 
-      {/* Main layout container */}
       <Box
         sx={{
-          height: "calc(100dvh - 64px)", // full viewport minus appbar
+          height: contentHeight,
           display: "flex",
           flexDirection: "column",
         }}
       >
-        {/* Main content area: either normal view or chat expanded */}
         {!chatOpen ? (
           <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
             {/* Left scrollable sections */}
@@ -62,7 +82,6 @@ export default function App() {
                 height: "100%",
                 overflowY: "auto",
                 scrollBehavior: "smooth",
-                boxSizing: "border-box",
               }}
             >
               {sections.map((section) => (
@@ -70,7 +89,6 @@ export default function App() {
                   key={section.id}
                   id={section.id}
                   sx={{
-                    height: "100%",
                     minHeight: "100%",
                     backgroundColor: getSectionColor(section.id),
                     display: "flex",
@@ -127,22 +145,17 @@ export default function App() {
           <Box
             sx={{
               flex: 1,
-              height: "90%",
-              p: 1,
-              position: "relative",
               display: "flex",
               flexDirection: "column",
+              position: "relative",
+              p: 1,
+              overflow: "hidden",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-              }}
-            >
-              <Button onClick={() => setChatOpen(false)}>hi </Button>
+            <Box sx={{ position: "absolute", top: 8, right: 8 }}>
+              <Button onClick={() => setChatOpen(false)}>close</Button>
             </Box>
+
             {/* Chat conversation area */}
             <Box
               sx={{
@@ -155,10 +168,10 @@ export default function App() {
                 bgcolor: "#fafafa",
               }}
             >
-              {/* Example chat content */}
               <Typography>Chat conversation here...</Typography>
             </Box>
-            {/* Chat input at bottom */}
+
+            {/* Chat input */}
             <TextField
               fullWidth
               placeholder="Ask the assistant..."
@@ -169,7 +182,6 @@ export default function App() {
           </Box>
         )}
 
-        {/* Chat input at bottom in normal view */}
         {!chatOpen && (
           <Box
             sx={{
