@@ -141,8 +141,8 @@ class ChatApp extends React.Component {
     return (
       <Box
         sx={{
-          height: "100vh",
-          maxHeight: "100vh",
+          height: "100dvh",
+          maxHeight: "100dvh",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
