@@ -246,7 +246,7 @@ class App extends Component {
       <div
         className="App"
         style={{
-          height: "100vh",
+          height: "100dvh",
           overflow: "hidden",
           position: "relative",
           backgroundColor: "#f5f5f5",
