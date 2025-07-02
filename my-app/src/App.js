@@ -6,9 +6,12 @@ import {
   Paper,
   Typography,
   Container,
+  InputAdornment,
 } from "@mui/material";
-import { Send as SendIcon } from "@mui/icons-material";
-
+import { Send } from "@mui/icons-material";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 class ChatApp extends React.Component {
   constructor(props) {
     super(props);
@@ -29,6 +32,7 @@ class ChatApp extends React.Component {
       inputValue: "",
       viewportHeight: window.innerHeight,
       keyboardVisible: false,
+      selectedDate: null,
     };
 
     this.messagesEndRef = React.createRef();
@@ -226,18 +230,44 @@ class ChatApp extends React.Component {
             sx={{
               display: "flex",
               alignItems: "flex-end",
+              flexDirection: "column",
               gap: 1,
             }}
           >
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Pick a date"
+                value={this.state.selectedDate}
+                onChange={(newValue) =>
+                  this.setState({ selectedDate: newValue })
+                }
+                sx={{ width: "100%" }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    size="small"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "20px",
+                        bgcolor: "#f8f8f8",
+                        width: "100%",
+                      },
+                      mb: 1, // margin-bottom
+                    }}
+                  />
+                )}
+              />
+            </LocalizationProvider>
+
             <TextField
               ref={this.inputRef}
               fullWidth
               multiline
               maxRows={4}
               placeholder="Type a message..."
-              value={inputValue}
-              onChange={this.handleInputChange}
-              onKeyPress={this.handleKeyPress}
+              onChange={(e) => {
+                this.handleInputChange();
+              }}
               variant="outlined"
               size="small"
               sx={{
@@ -246,28 +276,10 @@ class ChatApp extends React.Component {
                   bgcolor: "#f8f8f8",
                 },
               }}
-              // Prevent zoom on iOS
               inputProps={{
                 style: { fontSize: "16px" },
               }}
             />
-            {/* <IconButton
-              color="primary"
-              onClick={this.handleSendMessage}
-              disabled={!inputValue.trim()}
-              sx={{
-                bgcolor: "primary.main",
-                color: "white",
-                "&:hover": {
-                  bgcolor: "primary.dark",
-                },
-                "&.Mui-disabled": {
-                  bgcolor: "#ccc",
-                },
-              }}
-            >
-              <SendIcon />
-            </IconButton> */}
           </Box>
         </Paper>
       </Box>
