@@ -162,7 +162,7 @@ const WhenToMeet = () => {
         <Box
           sx={{
             overflowX: "auto",
-            maxHeight: isMobile ? "90vh" : "80vh",
+            maxHeight: isMobile ? "90dvh" : "80dvh",
             bgcolor: "white",
             touchAction: "auto", // ✅ Allow natural scrolling
           }}
