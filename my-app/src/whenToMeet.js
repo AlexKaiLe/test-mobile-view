@@ -14,7 +14,7 @@ const WhenToMeet = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const hours = Array.from({ length: 12 }, (_, i) => i + 7); // 7 to 18 (7am to 6pm)
 
   const [selectedSlots, setSelectedSlots] = useState(new Set());
   const [isDragging, setIsDragging] = useState(false);
@@ -60,36 +60,6 @@ const WhenToMeet = () => {
     }
     setSelectedSlots(newSet);
   };
-  //   const handleMouseDown = useCallback(
-  //     (day, hour) => {
-  //       const slotId = getSlotId(day, hour);
-  //       setIsDragging(true);
-  //       dragMode.current = selectedSlots.has(slotId) ? "deselect" : "select";
-  //       setSelectedSlots((prev) => {
-  //         const newSet = new Set(prev);
-  //         dragMode.current === "select"
-  //           ? newSet.add(slotId)
-  //           : newSet.delete(slotId);
-  //         return newSet;
-  //       });
-  //     },
-  //     [selectedSlots]
-  //   );
-
-  //   const handleMouseEnter = useCallback(
-  //     (day, hour) => {
-  //       if (!isDragging) return;
-  //       const slotId = getSlotId(day, hour);
-  //       setSelectedSlots((prev) => {
-  //         const newSet = new Set(prev);
-  //         dragMode.current === "select"
-  //           ? newSet.add(slotId)
-  //           : newSet.delete(slotId);
-  //         return newSet;
-  //       });
-  //     },
-  //     [isDragging]
-  //   );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -105,6 +75,10 @@ const WhenToMeet = () => {
   const handleTouchMove = useCallback(
     (e) => {
       if (!isDragging) return;
+
+      // Prevent only if you're actively selecting, not always
+      e.preventDefault();
+
       const touch = e.touches[0];
       const el = document.elementFromPoint(touch.clientX, touch.clientY);
       if (el?.dataset?.day && el?.dataset?.hour) {
@@ -178,9 +152,9 @@ const WhenToMeet = () => {
         <Box
           sx={{
             overflowX: "auto",
-            maxHeight: isMobile ? "60vh" : "70vh",
+            maxHeight: isMobile ? "60vh" : "80vh",
             bgcolor: "white",
-            touchAction: "none", // <- key to prevent iOS overscroll during touch
+            touchAction: "auto", // ✅ Allow natural scrolling
           }}
           onMouseUp={handleMouseUp}
           onTouchEnd={handleTouchEnd}
