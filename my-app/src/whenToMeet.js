@@ -107,64 +107,29 @@ const WhenToMeet = () => {
   return (
     <Box
       sx={{
-        maxWidth: "100%",
-        padding: 2,
+        display: "flex",
+        flexDirection: "column",
+        height: "100dvh",
         bgcolor: "#f5f5f5",
-        minHeight: "100dvh",
       }}
     >
-      <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-        {/* Header */}
-        <Box
-          sx={{
-            bgcolor: "primary.main",
-            color: "white",
-            p: 1,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="body2" sx={{ opacity: 0.85 }}>
-            Drag to select your available time slots
-          </Typography>
-        </Box>
-
-        {/* Stats Bar */}
-        <Box
-          sx={{
-            px: 2,
-            py: 1,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            bgcolor: "#fafafa",
-            borderBottom: "1px solid #e0e0e0",
-            flexWrap: "wrap",
-            gap: 2,
-          }}
-        >
-          <Chip
-            label={`${getSelectedCount()} slots selected`}
-            color="primary"
-            variant="outlined"
-            sx={{ textTransform: "none", fontSize: ".7rem" }}
-          />
-          <Button
-            onClick={clearAvailability}
-            variant="outlined"
-            disabled={getSelectedCount() === 0}
-            sx={{ textTransform: "none", px: 1, py: 0.5, fontSize: ".7rem" }}
-          >
-            Clear All
-          </Button>
-        </Box>
-
-        {/* Calendar Grid */}
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: 2,
+          flex: 1,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          boxSizing: "border-box",
+        }}
+      >
         <Box
           sx={{
             overflowX: "auto",
-            maxHeight: isMobile ? "90dvh" : "80dvh",
             bgcolor: "white",
-            touchAction: "auto", // ✅ Allow natural scrolling
+            flex: 1,
+            touchAction: "auto",
           }}
           onMouseUp={handleMouseUp}
           onTouchEnd={handleTouchEnd}
@@ -179,7 +144,9 @@ const WhenToMeet = () => {
               gridTemplateColumns: `${
                 isMobile ? "60px" : "80px"
               } repeat(7, 1fr)`,
-              minWidth: isMobile ? "500px" : "600px",
+              gridTemplateRows: `40px repeat(${hours.length}, 1fr)`, // 1 header + 18 flexible rows
+              height: "100%",
+              boxSizing: "border-box",
             }}
           >
             <Box
@@ -217,11 +184,12 @@ const WhenToMeet = () => {
                     pr: 0.5,
                     textAlign: "left",
                     fontSize: isMobile ? "0.6rem" : "0.75rem",
-                    height: isMobile ? 32 : 40,
+                    height: "100%",
                     color: "#666",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
+                    boxSizing: "border-box",
                   }}
                 >
                   {formatTime(hour)}
@@ -236,7 +204,8 @@ const WhenToMeet = () => {
                       data-hour={hour}
                       sx={{
                         border: "1px solid #e0e0e0",
-                        height: isMobile ? 32 : 40,
+                        height: "100%",
+                        boxSizing: "border-box",
                         fontSize: "0.75rem",
                         cursor: "pointer",
                         display: "flex",
