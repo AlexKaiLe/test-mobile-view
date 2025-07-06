@@ -1,0 +1,297 @@
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import {
+  Box,
+  Paper,
+  Typography,
+  Button,
+  Chip,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+
+const WhenToMeet = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+
+  const [selectedSlots, setSelectedSlots] = useState(new Set());
+  const [isDragging, setIsDragging] = useState(false);
+  const dragMode = useRef("select");
+
+  const getSlotId = (day, hour) => `${day}-${hour}`;
+
+  const formatTime = (hour) => {
+    const period = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:00 ${period}`;
+  };
+
+  const dragStartRef = useRef(null);
+
+  const handleMouseDown = (day, hour) => {
+    const slotId = getSlotId(day, hour);
+    setIsDragging(true);
+    dragMode.current = selectedSlots.has(slotId) ? "deselect" : "select";
+    dragStartRef.current = { day, hour };
+    updateSlots(dragStartRef.current, { day, hour });
+  };
+
+  const handleMouseEnter = (day, hour) => {
+    if (!isDragging || !dragStartRef.current) return;
+    updateSlots(dragStartRef.current, { day, hour });
+  };
+
+  const updateSlots = (start, end) => {
+    const dayMin = Math.min(start.day, end.day);
+    const dayMax = Math.max(start.day, end.day);
+    const hourMin = Math.min(start.hour, end.hour);
+    const hourMax = Math.max(start.hour, end.hour);
+
+    const newSet = new Set(selectedSlots);
+    for (let d = dayMin; d <= dayMax; d++) {
+      for (let h = hourMin; h <= hourMax; h++) {
+        const slotId = getSlotId(d, h);
+        dragMode.current === "select"
+          ? newSet.add(slotId)
+          : newSet.delete(slotId);
+      }
+    }
+    setSelectedSlots(newSet);
+  };
+  //   const handleMouseDown = useCallback(
+  //     (day, hour) => {
+  //       const slotId = getSlotId(day, hour);
+  //       setIsDragging(true);
+  //       dragMode.current = selectedSlots.has(slotId) ? "deselect" : "select";
+  //       setSelectedSlots((prev) => {
+  //         const newSet = new Set(prev);
+  //         dragMode.current === "select"
+  //           ? newSet.add(slotId)
+  //           : newSet.delete(slotId);
+  //         return newSet;
+  //       });
+  //     },
+  //     [selectedSlots]
+  //   );
+
+  //   const handleMouseEnter = useCallback(
+  //     (day, hour) => {
+  //       if (!isDragging) return;
+  //       const slotId = getSlotId(day, hour);
+  //       setSelectedSlots((prev) => {
+  //         const newSet = new Set(prev);
+  //         dragMode.current === "select"
+  //           ? newSet.add(slotId)
+  //           : newSet.delete(slotId);
+  //         return newSet;
+  //       });
+  //     },
+  //     [isDragging]
+  //   );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleTouchStart = useCallback(
+    (day, hour) => {
+      handleMouseDown(day, hour);
+    },
+    [handleMouseDown]
+  );
+
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (el?.dataset?.day && el?.dataset?.hour) {
+        handleMouseEnter(parseInt(el.dataset.day), parseInt(el.dataset.hour));
+      }
+    },
+    [isDragging, handleMouseEnter]
+  );
+
+  const handleTouchEnd = useCallback(() => handleMouseUp(), [handleMouseUp]);
+
+  const clearAvailability = () => setSelectedSlots(new Set());
+  const getSelectedCount = () => selectedSlots.size;
+
+  return (
+    <Box
+      sx={{
+        maxWidth: "100%",
+        padding: 2,
+        bgcolor: "#f5f5f5",
+        minHeight: "100dvh",
+      }}
+    >
+      <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
+        {/* Header */}
+        <Box
+          sx={{
+            bgcolor: "primary.main",
+            color: "white",
+            p: isMobile ? 2 : 3,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
+            When to Meet
+          </Typography>
+          <Typography variant="body2" sx={{ opacity: 0.85 }}>
+            Drag to select your available time slots
+          </Typography>
+        </Box>
+
+        {/* Stats Bar */}
+        <Box
+          sx={{
+            px: 2,
+            py: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            bgcolor: "#fafafa",
+            borderBottom: "1px solid #e0e0e0",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          <Chip
+            label={`${getSelectedCount()} slots selected`}
+            color="primary"
+            variant="outlined"
+          />
+          <Button
+            onClick={clearAvailability}
+            variant="outlined"
+            disabled={getSelectedCount() === 0}
+          >
+            Clear All
+          </Button>
+        </Box>
+
+        {/* Calendar Grid */}
+        <Box
+          sx={{
+            overflowX: "auto",
+            maxHeight: isMobile ? "60vh" : "70vh",
+            bgcolor: "white",
+            touchAction: "none", // <- key to prevent iOS overscroll during touch
+          }}
+          onMouseUp={handleMouseUp}
+          onTouchEnd={handleTouchEnd}
+          onTouchMove={(e) => {
+            e.preventDefault(); // prevent vertical scroll
+            handleTouchMove(e);
+          }}
+        >
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: `${
+                isMobile ? "60px" : "80px"
+              } repeat(7, 1fr)`,
+              minWidth: isMobile ? "500px" : "600px",
+            }}
+          >
+            <Box sx={{ height: 48, bgcolor: "#fafafa" }} />
+            {days.map((day) => (
+              <Box
+                key={day}
+                sx={{
+                  borderBottom: "2px solid #e0e0e0",
+                  borderRight: "1px solid #e0e0e0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 600,
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  height: 48,
+                }}
+              >
+                {day}
+              </Box>
+            ))}
+
+            {hours.map((hour) => (
+              <React.Fragment key={hour}>
+                <Box
+                  sx={{
+                    borderRight: "1px solid #e0e0e0",
+                    borderBottom: "1px solid #e0e0e0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                    pr: 1,
+                    textAlign: "left",
+                    fontSize: isMobile ? "0.6rem" : "0.75rem",
+                    height: isMobile ? 32 : 40,
+                    color: "#666",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {formatTime(hour)}
+                </Box>
+                {days.map((_, dayIndex) => {
+                  const slotId = getSlotId(dayIndex, hour);
+                  const isSelected = selectedSlots.has(slotId);
+                  return (
+                    <Box
+                      key={slotId}
+                      data-day={dayIndex}
+                      data-hour={hour}
+                      sx={{
+                        border: "1px solid #e0e0e0",
+                        height: isMobile ? 32 : 40,
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        userSelect: "none",
+                        bgcolor: isSelected ? "primary.main" : "white",
+                        color: isSelected ? "white" : "inherit",
+                        transition: "background-color 0.15s ease",
+                        "&:hover": {
+                          bgcolor: isSelected ? "primary.dark" : "#f5f5f5",
+                        },
+                      }}
+                      onMouseDown={() => handleMouseDown(dayIndex, hour)}
+                      onMouseEnter={() => handleMouseEnter(dayIndex, hour)}
+                      onTouchStart={() => handleTouchStart(dayIndex, hour)}
+                    >
+                      {isSelected && "✓"}
+                    </Box>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </Box>
+        </Box>
+
+        {/* Instructions */}
+        <Box
+          sx={{
+            p: 2,
+            textAlign: "center",
+            borderTop: "1px solid #e0e0e0",
+            bgcolor: "#fafafa",
+          }}
+        >
+          <Typography variant="caption" color="textSecondary">
+            💡 Tip: Click and drag to select multiple time slots. Drag over
+            selected slots to deselect.
+          </Typography>
+        </Box>
+      </Paper>
+    </Box>
+  );
+};
+
+export default WhenToMeet;

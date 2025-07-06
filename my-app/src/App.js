@@ -12,6 +12,7 @@ import { Send } from "@mui/icons-material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import WhenToMeet from "./whenToMeet";
 class ChatApp extends React.Component {
   constructor(props) {
     super(props);
@@ -143,146 +144,133 @@ class ChatApp extends React.Component {
       this.state;
 
     return (
-      <Box
-        sx={{
-          height: "100dvh",
-          maxHeight: "100dvh",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          bgcolor: "#f5f5f5",
-          position: "relative",
-        }}
-      >
-        {/* Header */}
-        <Paper
-          elevation={1}
-          sx={{
-            p: 2,
-            bgcolor: "primary.main",
-            color: "white",
-            flexShrink: 0,
-          }}
-        >
-          <Typography variant="h6" align="center">
-            Chat App
-          </Typography>
-        </Paper>
+      <WhenToMeet />
+      // <Box
+      //   sx={{
+      //     height: "100dvh",
+      //     maxHeight: "100dvh",
+      //     display: "flex",
+      //     flexDirection: "column",
+      //     overflow: "hidden",
+      //     bgcolor: "#f5f5f5",
+      //     position: "relative",
+      //   }}
+      // >
+      //   {/* Header */}
+      //   <Paper
+      //     elevation={1}
+      //     sx={{
+      //       p: 2,
+      //       bgcolor: "primary.main",
+      //       color: "white",
+      //       flexShrink: 0,
+      //     }}
+      //   >
+      //     <Typography variant="h6" align="center">
+      //       Chat App
+      //     </Typography>
+      //   </Paper>
 
-        {/* Messages Container */}
-        <Box
-          sx={{
-            flex: 1,
-            overflow: "auto",
-            p: 1,
-            display: "flex",
-            flexDirection: "column",
-            minHeight: 0, // Important for flex scroll
-            // Adjust height based on keyboard presence
-            height: keyboardVisible ? `${viewportHeight - 120}px` : "auto",
-          }}
-        >
-          {messages.map((message) => (
-            <Box
-              key={message.id}
-              sx={{
-                display: "flex",
-                justifyContent:
-                  message.sender === "me" ? "flex-end" : "flex-start",
-                mb: 1,
-              }}
-            >
-              <Paper
-                sx={{
-                  p: 2,
-                  maxWidth: "70%",
-                  bgcolor: message.sender === "me" ? "primary.main" : "white",
-                  color: message.sender === "me" ? "white" : "text.primary",
-                  borderRadius:
-                    message.sender === "me"
-                      ? "20px 20px 4px 20px"
-                      : "20px 20px 20px 4px",
-                }}
-              >
-                <Typography variant="body1">{message.text}</Typography>
-              </Paper>
-            </Box>
-          ))}
-          <div ref={this.messagesEndRef} />
-        </Box>
+      //   {/* Messages Container */}
+      //   <Box
+      //     sx={{
+      //       flex: 1,
+      //       overflow: "auto",
+      //       p: 1,
+      //       display: "flex",
+      //       flexDirection: "column",
+      //       minHeight: 0, // Important for flex scroll
+      //       // Adjust height based on keyboard presence
+      //       height: keyboardVisible ? `${viewportHeight - 120}px` : "auto",
+      //     }}
+      //   >
+      //     {messages.map((message) => (
+      //       <Box
+      //         key={message.id}
+      //         sx={{
+      //           display: "flex",
+      //           justifyContent:
+      //             message.sender === "me" ? "flex-end" : "flex-start",
+      //           mb: 1,
+      //         }}
+      //       >
+      //         <Paper
+      //           sx={{
+      //             p: 2,
+      //             maxWidth: "70%",
+      //             bgcolor: message.sender === "me" ? "primary.main" : "white",
+      //             color: message.sender === "me" ? "white" : "text.primary",
+      //             borderRadius:
+      //               message.sender === "me"
+      //                 ? "20px 20px 4px 20px"
+      //                 : "20px 20px 20px 4px",
+      //           }}
+      //         >
+      //           <Typography variant="body1">{message.text}</Typography>
+      //         </Paper>
+      //       </Box>
+      //     ))}
+      //     <div ref={this.messagesEndRef} />
+      //   </Box>
 
-        {/* Input Container */}
-        <Paper
-          elevation={3}
-          sx={{
-            p: 2,
-            bgcolor: "white",
-            flexShrink: 0,
-            position: "sticky",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            // Prevent the input from being pushed off screen
-            zIndex: 1000,
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              flexDirection: "column",
-              gap: 1,
-            }}
-          >
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Pick a date"
-                value={this.state.selectedDate}
-                onChange={(newValue) =>
-                  this.setState({ selectedDate: newValue })
-                }
-                sx={{ width: "100%" }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "20px",
-                        bgcolor: "#f8f8f8",
-                        width: "100%",
-                      },
-                      mb: 1, // margin-bottom
-                    }}
-                  />
-                )}
-              />
-            </LocalizationProvider>
+      //   {/* Input Container */}
+      //   <Paper
+      //     elevation={3}
+      //     sx={{
+      //       p: 2,
+      //       bgcolor: "white",
+      //       flexShrink: 0,
+      //       position: "sticky",
+      //       bottom: 0,
+      //       left: 0,
+      //       right: 0,
+      //       // Prevent the input from being pushed off screen
+      //       zIndex: 1000,
+      //     }}
+      //   >
+      //     <Box
+      //       sx={{
+      //         display: "flex",
+      //         alignItems: "flex-end",
+      //         flexDirection: "column",
+      //         gap: 1,
+      //       }}
+      //     >
+      //       <LocalizationProvider dateAdapter={AdapterDateFns}>
+      //         <DatePicker
+      //           label="Pick a date"
+      //           value={this.state.selectedDate}
+      //           onChange={(newValue) =>
+      //             this.setState({ selectedDate: newValue })
+      //           }
+      //           sx={{ width: "100%" }}
+      //         />
+      //       </LocalizationProvider>
 
-            <TextField
-              ref={this.inputRef}
-              fullWidth
-              multiline
-              maxRows={4}
-              placeholder="Type a message..."
-              onChange={(e) => {
-                this.handleInputChange();
-              }}
-              variant="outlined"
-              size="small"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "20px",
-                  bgcolor: "#f8f8f8",
-                },
-              }}
-              inputProps={{
-                style: { fontSize: "16px" },
-              }}
-            />
-          </Box>
-        </Paper>
-      </Box>
+      //       <TextField
+      //         ref={this.inputRef}
+      //         fullWidth
+      //         multiline
+      //         maxRows={4}
+      //         placeholder="Type a message..."
+      //         onChange={(e) => {
+      //           this.handleInputChange();
+      //         }}
+      //         variant="outlined"
+      //         size="small"
+      //         sx={{
+      //           "& .MuiOutlinedInput-root": {
+      //             borderRadius: "20px",
+      //             bgcolor: "#f8f8f8",
+      //           },
+      //         }}
+      //         inputProps={{
+      //           style: { fontSize: "16px" },
+      //         }}
+      //       />
+      //     </Box>
+      //   </Paper>
+      // </Box>
     );
   }
 }
