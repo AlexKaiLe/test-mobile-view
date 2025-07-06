@@ -14,7 +14,7 @@ const WhenToMeet = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const hours = Array.from({ length: 12 }, (_, i) => i + 7); // 7 to 18 (7am to 6pm)
+  const hours = Array.from({ length: 18 }, (_, i) => i + 5);
 
   const [selectedSlots, setSelectedSlots] = useState(new Set());
   const [isDragging, setIsDragging] = useState(false);
@@ -41,6 +41,17 @@ const WhenToMeet = () => {
   const handleMouseEnter = (day, hour) => {
     if (!isDragging || !dragStartRef.current) return;
     updateSlots(dragStartRef.current, { day, hour });
+  };
+
+  const handleClick = (day, hour) => {
+    const slotId = getSlotId(day, hour);
+    const newSet = new Set(selectedSlots);
+    if (newSet.has(slotId)) {
+      newSet.delete(slotId);
+    } else {
+      newSet.add(slotId);
+    }
+    setSelectedSlots(newSet);
   };
 
   const updateSlots = (start, end) => {
@@ -108,13 +119,10 @@ const WhenToMeet = () => {
           sx={{
             bgcolor: "primary.main",
             color: "white",
-            p: isMobile ? 2 : 3,
+            p: 1,
             textAlign: "center",
           }}
         >
-          <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
-            When to Meet
-          </Typography>
           <Typography variant="body2" sx={{ opacity: 0.85 }}>
             Drag to select your available time slots
           </Typography>
@@ -138,11 +146,13 @@ const WhenToMeet = () => {
             label={`${getSelectedCount()} slots selected`}
             color="primary"
             variant="outlined"
+            sx={{ textTransform: "none", fontSize: ".7rem" }}
           />
           <Button
             onClick={clearAvailability}
             variant="outlined"
             disabled={getSelectedCount() === 0}
+            sx={{ textTransform: "none", px: 1, py: 0.5, fontSize: ".7rem" }}
           >
             Clear All
           </Button>
@@ -152,7 +162,7 @@ const WhenToMeet = () => {
         <Box
           sx={{
             overflowX: "auto",
-            maxHeight: isMobile ? "60vh" : "80vh",
+            maxHeight: isMobile ? "90vh" : "80vh",
             bgcolor: "white",
             touchAction: "auto", // ✅ Allow natural scrolling
           }}
@@ -172,7 +182,12 @@ const WhenToMeet = () => {
               minWidth: isMobile ? "500px" : "600px",
             }}
           >
-            <Box sx={{ height: 48, bgcolor: "#fafafa" }} />
+            <Box
+              sx={{
+                borderBottom: "2px solid #e0e0e0",
+                borderRight: "1px solid #e0e0e0",
+              }}
+            />
             {days.map((day) => (
               <Box
                 key={day}
@@ -184,7 +199,6 @@ const WhenToMeet = () => {
                   justifyContent: "center",
                   fontWeight: 600,
                   fontSize: isMobile ? "0.75rem" : "0.875rem",
-                  height: 48,
                 }}
               >
                 {day}
@@ -198,9 +212,9 @@ const WhenToMeet = () => {
                     borderRight: "1px solid #e0e0e0",
                     borderBottom: "1px solid #e0e0e0",
                     display: "flex",
-                    alignItems: "center",
+                    alignItems: "top",
                     justifyContent: "flex-end",
-                    pr: 1,
+                    pr: 0.5,
                     textAlign: "left",
                     fontSize: isMobile ? "0.6rem" : "0.75rem",
                     height: isMobile ? 32 : 40,
@@ -236,6 +250,7 @@ const WhenToMeet = () => {
                           bgcolor: isSelected ? "primary.dark" : "#f5f5f5",
                         },
                       }}
+                      onClick={() => handleClick(dayIndex, hour)}
                       onMouseDown={() => handleMouseDown(dayIndex, hour)}
                       onMouseEnter={() => handleMouseEnter(dayIndex, hour)}
                       onTouchStart={() => handleTouchStart(dayIndex, hour)}
@@ -247,21 +262,6 @@ const WhenToMeet = () => {
               </React.Fragment>
             ))}
           </Box>
-        </Box>
-
-        {/* Instructions */}
-        <Box
-          sx={{
-            p: 2,
-            textAlign: "center",
-            borderTop: "1px solid #e0e0e0",
-            bgcolor: "#fafafa",
-          }}
-        >
-          <Typography variant="caption" color="textSecondary">
-            💡 Tip: Click and drag to select multiple time slots. Drag over
-            selected slots to deselect.
-          </Typography>
         </Box>
       </Paper>
     </Box>
